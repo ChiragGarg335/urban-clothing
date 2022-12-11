@@ -20,6 +20,7 @@
     "redux-immutable-state-invariant": "^2.1.0",
     "redux-logger": "^3.0.6",
     "redux-oidc": "^4.0.0-beta1",
+    "stripe": "^11.3.0",
     "styled-components": "^5.3.6",
     "web-vitals": "^2.1.4"
   },
