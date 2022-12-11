@@ -3,7 +3,6 @@ import "./payment-form.scss";
 import { useContext } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { CartContext } from "../../contexts/cartDropdownContext";
-import { UserContext } from "../../contexts/userContext";
 
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button";
 
@@ -11,8 +10,6 @@ const PaymentForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const { totalAmount } = useContext(CartContext);
-  const { currentUser } = useContext(UserContext);
-  // const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const paymentHandler = async (e) => {
     console.log("entered");
@@ -20,48 +17,47 @@ const PaymentForm = () => {
     if (!stripe || !elements) {
       return;
     }
-    //   setIsProcessingPayment(true);
-    const details={
-        amount:10000
-    }
+
     const response = await fetch("/.netlify/functions/create-payment-intent", {
       method: "post",
       headers: {
         "Content-Type": "application/json",
       },
-      body: {'amount':1000},
+      body: JSON.stringify({ amount: totalAmount * 100 }),
     }).then((res) => {
-        return res.json();
-      });
-    
-    //   const clientSecret = response.paymentIntent.client_secret;
-    console.log("reached");
-    const {
-      paymentIntent: { client_secret },
-    } = response;
-    const paymentResult = await stripe.confirmCardPayment(client_secret, {
-      payment_method: {
-        card: elements.getElement(CardElement),
-        billing_details: {
-          name: currentUser ? currentUser.displayName : "Yihua Zhang",
-        },
-      },
+      return res.json();
     });
 
-    //   setIsProcessingPayment(false);
+    console.log("reached");
 
-    if (paymentResult.error) {
-      alert(paymentResult.error.message);
+    if (response.error) {
+      // Report to the browser that the payment failed.
+      console.log(response.error);
     } else {
-      if (paymentResult.paymentIntent.status === "succeeded") {
-        alert("Payment Successful!");
+      // Report to the browser that the confirmation was successful, prompting
+      // it to close the browser payment method collection interface.
+      console.log("Successful Transaction");
+      // Let Stripe.js handle the rest of the payment flow, including 3D Secure if needed.
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        response.paymentIntent.client_secret
+      );
+      if (error) {
+        console.log(error);
+        return;
+      }
+      if (paymentIntent.status === "succeeded") {
+        console.log("Payment Completed");
+      } else {
+        console.warn(
+          `Unexpected status: ${paymentIntent.status} for ${paymentIntent}`
+        );
       }
     }
   };
   return (
     <div className="payment-container">
       <div className="payment-form">
-        <h2>Credit Card : </h2>
+        <h2>Payment : </h2>
         <CardElement />
         <Button
           buttonType={BUTTON_TYPE_CLASSES.inverted}
