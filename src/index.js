@@ -1,28 +1,35 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import {BrowserRouter} from 'react-router-dom'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 
-import './index.css';
-import App from './App';
-import { UserProvider } from './contexts/userContext';
-import { CategoryProvider } from './contexts/categoriesContext';
-import { CartProvider } from './contexts/cartDropdownContext';
-import reportWebVitals from './reportWebVitals';
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import "./index.css";
+import App from "./App";
+import { Provider } from "react-redux";
+import {store} from './store/store'
+import { UserProvider } from "./contexts/userContext";
+// import { CategoryProvider } from "./contexts/categoriesContext";
+import {Elements} from '@stripe/react-stripe-js'
+import { StripePromise } from "./utils/stripe/stripe";
+import { CartProvider } from "./contexts/cartDropdownContext";
+import reportWebVitals from "./reportWebVitals";
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-    <CategoryProvider>
+  // <React.StrictMode>
+    <Provider store={store}>
+      <BrowserRouter>
+      <UserProvider>
 
-    <UserProvider>
-      <CartProvider>
-       <App />
-       </CartProvider>
-    </UserProvider>
-    </CategoryProvider>
-
-    </BrowserRouter>
-  </React.StrictMode>
+        {/* <CategoryProvider> */}
+            <CartProvider>
+              <Elements stripe={StripePromise}>
+              <App />
+              </Elements>
+            </CartProvider>
+        {/* </CategoryProvider> */}
+        </UserProvider>
+      </BrowserRouter>
+    </Provider>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -1,8 +1,9 @@
 import { Fragment, useContext } from "react";
 import { Outlet, Link } from "react-router-dom";
 import { ReactComponent as Logo } from "../../Assets/crown.svg";
-import CartIcon from "../../Components/cart-icon/cartIcon";
+import { useSelector } from "react-redux";
 import { UserContext } from "../../contexts/userContext";
+import CartIcon from "../../Components/cart-icon/cartIcon";
 import { CartContext } from "../../contexts/cartDropdownContext";
 import { signOutuser } from "../../utils/firebase/firebase";
 import CartDropdown from '../../Components/cart-dropdown/cartDropdown'
